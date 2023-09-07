@@ -1,13 +1,16 @@
 
+import validator from 'validator';
+import * as db from '../database';
+import * as meta from '../meta';
+import * as plugins from '../plugins';
+import * as utils from '../utils';
 
+// const validator = require('validator');
 
-
-const validator = require('validator');
-
-const db = require('../database');
-const meta = require('../meta');
-const plugins = require('../plugins');
-const utils = require('../utils');
+// const db = require('../database');
+// const meta = require('../meta');
+// const plugins = require('../plugins');
+// const utils = require('../utils');
 
 const intFields = [
     'cid', 'parentCid', 'disabled', 'isSection', 'order',
