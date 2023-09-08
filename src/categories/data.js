@@ -50,8 +50,8 @@ const intFields = [
     'topic_count', 'post_count', 'numRecentReplies',
     'minTags', 'maxTags', 'postQueue', 'subCategoriesPerPage',
 ];
-module.exports = function (Categories) {
-    Categories.getCategoriesFields = function (cids, fields) {
+const Categories = {
+    getCategoriesFields: function (cids, fields) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!Array.isArray(cids) || !cids.length) {
                 return [];
@@ -67,47 +67,91 @@ module.exports = function (Categories) {
             result.categories.forEach(category => modifyCategory(category, fields));
             return result.categories;
         });
-    };
-    Categories.getCategoryData = function (cid) {
+    },
+    getCategoryData: function (cid) {
         return __awaiter(this, void 0, void 0, function* () {
-            const categories = yield Categories.getCategoriesFields([cid], []);
+            const fields = 'desiredFields';
+            const categories = yield Categories.getCategoriesFields([cid], fields);
             return categories && categories.length ? categories[0] : null;
         });
-    };
-    Categories.getCategoriesData = function (cids) {
+    },
+    getCategoriesData: function (cids) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield Categories.getCategoriesFields(cids, []);
+            const fields = 'desiredFields';
+            return yield Categories.getCategoriesFields(cids, fields);
         });
-    };
-    Categories.getCategoryField = function (cid, field) {
+    },
+    getCategoryField: function (cid, field) {
         return __awaiter(this, void 0, void 0, function* () {
-            const category = yield Categories.getCategoryFields(cid, [field]);
+            const category = yield Categories.getCategoryFields(cid, field);
             return category ? category[field] : null;
         });
-    };
-    Categories.getCategoryFields = function (cid, fields) {
+    },
+    getCategoryFields: function (cid, fields) {
         return __awaiter(this, void 0, void 0, function* () {
             const categories = yield Categories.getCategoriesFields([cid], fields);
             return categories ? categories[0] : null;
         });
-    };
-    Categories.getAllCategoryFields = function (fields) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const cids = yield Categories.getAllCidsFromSet('categories:cid');
-            return yield Categories.getCategoriesFields(cids, fields);
-        });
-    };
-    Categories.setCategoryField = function (cid, field, value) {
+    },
+    // getAllCategoryFields: async function (fields: string): Promise<Category[]> {
+    //     const cids = await Categories.getAllCidsFromSet('categories:cid');
+    //     return await Categories.getCategoriesFields(cids, fields);
+    // },
+    setCategoryField: function (cid, field, value) {
         return __awaiter(this, void 0, void 0, function* () {
             yield db.setObjectField(`category:${cid}`, field, value);
         });
-    };
-    Categories.incrementCategoryFieldBy = function (cid, field, value) {
+    },
+    incrementCategoryFieldBy: function (cid, field, value) {
         return __awaiter(this, void 0, void 0, function* () {
             yield db.incrObjectFieldBy(`category:${cid}`, field, value);
         });
-    };
+    },
 };
+// Export the Categories module
+exports.default = Categories;
+// module.exports = function (Categories) {
+//     Categories.getCategoriesFields = async function (cids: number[], fields: string) {
+//         if (!Array.isArray(cids) || !cids.length) {
+//             return [];
+//         }
+//         const keys = cids.map(cid => `category:${cid}`);
+//         const categories = await db.getObjects(keys, fields);
+//         const result = await plugins.hooks.fire('filter:category.getFields', {
+//             cids: cids,
+//             categories: categories,
+//             fields: fields,
+//             keys: keys,
+//         });
+//         result.categories.forEach(category => modifyCategory(category, fields));
+//         return result.categories;
+//     };
+//     Categories.getCategoryData = async function (cid: number) {
+//         const categories = await Categories.getCategoriesFields([cid], []);
+//         return categories && categories.length ? categories[0] : null;
+//     };
+//     Categories.getCategoriesData = async function (cids: number) {
+//         return await Categories.getCategoriesFields(cids, []);
+//     };
+//     Categories.getCategoryField = async function (cid: number, field: string) {
+//         const category = await Categories.getCategoryFields(cid, [field]);
+//         return category ? category[field] : null;
+//     };
+//     Categories.getCategoryFields = async function (cid: number, fields: string) {
+//         const categories = await Categories.getCategoriesFields([cid], fields);
+//         return categories ? categories[0] : null;
+//     };
+//     Categories.getAllCategoryFields = async function (fields: string) {
+//         const cids = await Categories.getAllCidsFromSet('categories:cid');
+//         return await Categories.getCategoriesFields(cids, fields);
+//     };
+//     Categories.setCategoryField = async function (cid: number, field: string, value: number) {
+//         await db.setObjectField(`category:${cid}`, field, value);
+//     };
+//     Categories.incrementCategoryFieldBy = async function (cid: number, field: string, value: number) {
+//         await db.incrObjectFieldBy(`category:${cid}`, field, value);
+//     };
+// };
 function defaultIntField(category, fields, fieldName, defaultField) {
     if (!fields.length || fields.includes(fieldName)) {
         const useDefault = !category.hasOwnProperty(fieldName) ||
